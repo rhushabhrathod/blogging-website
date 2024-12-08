@@ -6,7 +6,6 @@ import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import admin from "firebase-admin";
-import serviceAccountKey from "./react-js-blog-website-7e3be-firebase-adminsdk-3vhpf-fca16dd6f2.json" assert { type: "json" };
 import { getAuth } from "firebase-admin/auth";
 import aws from "aws-sdk";
 
@@ -15,13 +14,25 @@ import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
 import Notification from "./Schema/Notification.js";
 import Comment from "./Schema/Comment.js";
-import { populate } from "dotenv";
 
 const server = express();
 let PORT = 3000;
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountKey),
+  credential: admin.credential.cert({
+    type: process.env.FIREBASE_TYPE,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    clientId: process.env.FIREBASE_CLIENT_ID,
+    authUri: process.env.FIREBASE_AUTH_URI,
+    tokenUri: process.env.FIREBASE_TOKEN_URI,
+    authProviderX509CertUrl: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+    clientC509CertUrl: process.env.FIREBASE_CLIENT_CERT_URL,
+    universeDomain: process.env.FIREBASE_UNIVERSE_DOMAIN,
+  }),
+  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
 });
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
